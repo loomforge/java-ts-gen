@@ -21,7 +21,7 @@ In your `pom.xml`:
   <dependency>
     <groupId>io.github.loomforge</groupId>
     <artifactId>jtg-annotation</artifactId>
-    <version>0.1.0</version>
+    <version>${version}</version>
     <scope>provided</scope>
     <optional>true</optional> 
   </dependency>
@@ -32,7 +32,7 @@ In your `pom.xml`:
     <plugin>
       <groupId>io.github.loomforge</groupId>
       <artifactId>jtg-maven-plugin</artifactId>
-      <version>0.1.0</version>
+      <version>${version}</version>
     </plugin>
   </plugins>
 </build>
@@ -120,7 +120,7 @@ JTG runs automatically on `generate-sources` with zero configuration. All parame
 <plugin>
   <groupId>io.github.loomforge</groupId>
   <artifactId>jtg-maven-plugin</artifactId>
-  <version>0.1.0</version>
+  <version>${version}</version>
   <configuration>
     <!-- Extra source dirs to scan (beyond src/main/java) -->
     <additionalSourceDirs>
@@ -167,12 +167,10 @@ jtg/
 ## Building JTG Locally
 
 ```bash
-git clone https://github.com/yourname/jtg.git
-cd jtg
+git clone https://github.com/loomforge/java-ts-gen.git
+cd java-ts-gen
 mvn install
 ```
-
-Then add the `0.1.0` dependency to any project and run `mvn jtg:generate`.
 
 ---
 
