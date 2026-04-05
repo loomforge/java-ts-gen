@@ -1,0 +1,41 @@
+name: maven-central-publish
+
+on:
+  push:
+    tags:
+      - '[0-9]+.[0-9]+.[0-9]+'
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    environment: central
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Maven Central Repository
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          server-id: central
+          server-username: MAVEN_USERNAME
+          server-password: MAVEN_PASSWORD
+          gpg-private-key: MAVEN_GPG_KEY
+          gpg-passphrase: MAVEN_GPG_PASSPHRASE
+
+      - name: Verify tag matches pom.xml version
+        run: |
+          POM_VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
+          TAG_VERSION="${{ github.ref_name }}"
+          if [ "$POM_VERSION" != "$TAG_VERSION" ]; then
+            echo "ERROR: pom.xml version ($POM_VERSION) does not match tag ($TAG_VERSION)"
+            exit 1
+          fi
+
+      - name: Deploy to Maven Central
+        run: mvn --batch-mode -P release deploy
+        env:
+          MAVEN_USERNAME: ${{ secrets.OSSRH_USERNAME }}
+          MAVEN_PASSWORD: ${{ secrets.OSSRH_PASSWORD }}
+          MAVEN_GPG_KEY: ${{ secrets.GPG_KEY }}
+          MAVEN_GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
