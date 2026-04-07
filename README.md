@@ -33,6 +33,14 @@ In your `pom.xml`:
       <groupId>io.github.loomforge</groupId>
       <artifactId>jtg-maven-plugin</artifactId>
       <version>${version}</version>
+      <executions>
+        <execution>
+          <phase>generate-sources</phase>
+          <goals>
+            <goal>generate</goal>
+          </goals>
+        </execution>
+      </executions>
     </plugin>
   </plugins>
 </build>
