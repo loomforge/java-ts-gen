@@ -34,27 +34,25 @@ public final class RecordParser {
      *                      references in its components — emitted into the same .ts file
      */
     public record RecordDefinition(
-        String recordName,
-        String exportName,   // may differ if @TsRecord(exportName="...")
-        boolean asType,
-        List<Component> components,
-        Path sourceFile,
-        List<RecordDefinition> dependencies
-    ) {
+            String recordName,
+            String exportName, // may differ if @TsRecord(exportName="...")
+            boolean asType,
+            List<Component> components,
+            Path sourceFile,
+            List<RecordDefinition> dependencies) {
         /** Convenience constructor — no dependencies (backwards compat). */
-        public RecordDefinition(String recordName, String exportName, boolean asType,
-                                List<Component> components, Path sourceFile) {
+        public RecordDefinition(
+                String recordName, String exportName, boolean asType, List<Component> components, Path sourceFile) {
             this(recordName, exportName, asType, components, sourceFile, List.of());
         }
     }
 
     // Matches @TsRecord with optional attributes on the line(s) before the record declaration
-    private static final Pattern TS_RECORD_ANNOTATION =
-        Pattern.compile("@TsRecord(?:\\s*\\(([^)]*)\\))?");
+    private static final Pattern TS_RECORD_ANNOTATION = Pattern.compile("@TsRecord(?:\\s*\\(([^)]*)\\))?");
 
     // Matches:  public record Foo(String name, int age, ...)
     private static final Pattern RECORD_DECL =
-        Pattern.compile("(?:public\\s+|private\\s+|protected\\s+)?record\\s+(\\w+)\\s*\\(([^)]*)\\)");
+            Pattern.compile("(?:public\\s+|private\\s+|protected\\s+)?record\\s+(\\w+)\\s*\\(([^)]*)\\)");
 
     private RecordParser() {}
 
@@ -90,7 +88,7 @@ public final class RecordParser {
                 String attrs = annMatcher.group(1);
                 if (attrs != null && !attrs.isBlank()) {
                     pendingExportName = extractStringAttribute(attrs, "exportName");
-                    pendingAsType     = extractBooleanAttribute(attrs, "asType");
+                    pendingAsType = extractBooleanAttribute(attrs, "asType");
                 }
                 continue;
             }
@@ -104,18 +102,18 @@ public final class RecordParser {
                 Matcher recMatcher = RECORD_DECL.matcher(window);
                 if (recMatcher.find()) {
                     String recordName = recMatcher.group(1);
-                    String paramsRaw  = recMatcher.group(2);
+                    String paramsRaw = recMatcher.group(2);
                     String exportName = (pendingExportName != null && !pendingExportName.isBlank())
-                        ? pendingExportName : recordName;
+                            ? pendingExportName
+                            : recordName;
 
                     List<Component> components = parseComponents(paramsRaw);
 
                     // Resolve dependencies: other records in this file referenced by components
-                    List<RecordDefinition> deps = resolveDependencies(
-                        components, recordName, allRecordsInFile);
+                    List<RecordDefinition> deps = resolveDependencies(components, recordName, allRecordsInFile);
 
-                    results.add(new RecordDefinition(
-                        recordName, exportName, pendingAsType, components, sourceFile, deps));
+                    results.add(
+                            new RecordDefinition(recordName, exportName, pendingAsType, components, sourceFile, deps));
                 }
                 annotationSeen = false;
                 pendingExportName = null;
@@ -149,9 +147,7 @@ public final class RecordParser {
      * in declaration order. Transitive deps are resolved recursively (cycle-safe).
      */
     static List<RecordDefinition> resolveDependencies(
-            List<Component> components,
-            String selfName,
-            Map<String, RecordDefinition> allRecords) {
+            List<Component> components, String selfName, Map<String, RecordDefinition> allRecords) {
         return resolveDependencies(components, selfName, allRecords, new LinkedHashSet<>());
     }
 
@@ -165,16 +161,16 @@ public final class RecordParser {
         for (Component c : components) {
             // Extract bare type name(s) from generic wrappers: List<TripCard> -> TripCard
             for (String typeName : extractSimpleTypeNames(c.type())) {
-                if (typeName.equals(selfName)) continue;       // skip self-reference
-                if (visited.contains(typeName)) continue;      // skip already-visited
+                if (typeName.equals(selfName)) continue; // skip self-reference
+                if (visited.contains(typeName)) continue; // skip already-visited
                 RecordDefinition dep = allRecords.get(typeName);
-                if (dep == null) continue;                     // not a sibling record
+                if (dep == null) continue; // not a sibling record
 
                 visited.add(typeName);
 
                 // Recursively resolve the dependency's own deps first (DFS pre-order)
-                List<RecordDefinition> transitive = resolveDependencies(
-                    dep.components(), typeName, allRecords, visited);
+                List<RecordDefinition> transitive =
+                        resolveDependencies(dep.components(), typeName, allRecords, visited);
 
                 deps.addAll(transitive);
                 deps.add(dep);

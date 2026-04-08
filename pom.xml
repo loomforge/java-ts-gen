@@ -3,126 +3,156 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
                              https://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
+    <modelVersion>4.0.0</modelVersion>
 
-  <groupId>io.github.loomforge</groupId>
-  <artifactId>java-ts-gen</artifactId>
-  <version>0.1.0</version>
-  <packaging>pom</packaging>
+    <groupId>io.github.loomforge</groupId>
+    <artifactId>java-ts-gen</artifactId>
+    <version>0.1.0</version>
+    <packaging>pom</packaging>
 
-  <name>Java-TS-Gen :: Parent</name>
-  <description>Generate TypeScript from annotated Java records</description>
+    <name>Java-TS-Gen :: Parent</name>
+    <description>Generate TypeScript from annotated Java records</description>
 
-  <url>https://github.com/loomforge/java-ts-gen</url>
-
-  <licenses>
-    <license>
-      <name>MIT License</name>
-      <url>https://opensource.org/licenses/MIT</url>
-    </license>
-  </licenses>
-
-  <developers>
-    <developer>
-      <id>iamkavindu</id>
-      <name>Kavindu</name>
-      <email>kavinduperera2010@gmail.com</email>
-      <roles>
-        <role>
-          owner
-        </role>
-      </roles>
-      <organization>Loom Forge</organization>
-      <organizationUrl>https://github.com/loomforge</organizationUrl>
-    </developer>
-  </developers>
-
-  <scm>
-    <connection>scm:git:git://github.com/loomforge/java-ts-gen.git</connection>
-    <developerConnection>scm:git:ssh://github.com/loomforge/java-ts-gen.git</developerConnection>
     <url>https://github.com/loomforge/java-ts-gen</url>
-  </scm>
 
-  <modules>
-    <module>jtg-annotation</module>
-    <module>jtg-maven-plugin</module>
-  </modules>
+    <licenses>
+        <license>
+            <name>MIT License</name>
+            <url>https://opensource.org/licenses/MIT</url>
+        </license>
+    </licenses>
 
-  <properties>
-    <java.version>17</java.version>
-    <maven.compiler.source>${java.version}</maven.compiler.source>
-    <maven.compiler.target>${java.version}</maven.compiler.target>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <maven.version>3.9.6</maven.version>
-  </properties>
+    <developers>
+        <developer>
+            <id>iamkavindu</id>
+            <name>Kavindu</name>
+            <email>kavinduperera2010@gmail.com</email>
+            <roles>
+                <role>
+                    owner
+                </role>
+            </roles>
+            <organization>Loom Forge</organization>
+            <organizationUrl>https://github.com/loomforge</organizationUrl>
+        </developer>
+    </developers>
 
-  <profiles>
-  <profile>
-    <id>release</id>
+    <scm>
+        <connection>scm:git:git://github.com/loomforge/java-ts-gen.git</connection>
+        <developerConnection>scm:git:ssh://github.com/loomforge/java-ts-gen.git</developerConnection>
+        <url>https://github.com/loomforge/java-ts-gen</url>
+    </scm>
+
+    <modules>
+        <module>jtg-annotation</module>
+        <module>jtg-maven-plugin</module>
+    </modules>
+
+    <properties>
+        <java.version>17</java.version>
+        <maven.compiler.source>${java.version}</maven.compiler.source>
+        <maven.compiler.target>${java.version}</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven.version>3.9.6</maven.version>
+        <spotless.version>3.4.0</spotless.version>
+        <palantir-java-format.version>2.89.0</palantir-java-format.version>
+    </properties>
+
     <build>
-      <plugins>
-
-        <!-- Sources JAR — required by Central -->
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-source-plugin</artifactId>
-          <version>3.3.1</version>
-          <executions>
-            <execution>
-              <id>attach-sources</id>
-              <goals><goal>jar-no-fork</goal></goals>
-            </execution>
-          </executions>
-        </plugin>
-
-        <!-- Javadoc JAR — required by Central -->
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-javadoc-plugin</artifactId>
-          <version>3.6.3</version>
-          <executions>
-            <execution>
-              <id>attach-javadocs</id>
-              <goals><goal>jar</goal></goals>
-            </execution>
-          </executions>
-        </plugin>
-
-        <!-- GPG signing — required by Central -->
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-gpg-plugin</artifactId>
-          <version>3.2.4</version>
-          <executions>
-            <execution>
-              <id>sign-artifacts</id>
-              <phase>verify</phase>
-              <goals><goal>sign</goal></goals>
-            </execution>
-          </executions>
-          <configuration>
-            <gpgArguments>
-              <arg>--pinentry-mode</arg>
-              <arg>loopback</arg>
-            </gpgArguments>
-          </configuration>
-        </plugin>
-
-        <!-- Central Publishing Plugin -->
-        <plugin>
-          <groupId>org.sonatype.central</groupId>
-          <artifactId>central-publishing-maven-plugin</artifactId>
-          <version>0.10.0</version>
-          <extensions>true</extensions>
-          <configuration>
-            <publishingServerId>central</publishingServerId>
-            <autoPublish>true</autoPublish>
-          </configuration>
-        </plugin>
-
-      </plugins>
+        <plugins>
+            <plugin>
+                <groupId>com.diffplug.spotless</groupId>
+                <artifactId>spotless-maven-plugin</artifactId>
+                <version>${spotless.version}</version>
+                <configuration>
+                    <java>
+                        <importOrder />
+                        <removeUnusedImports />
+                        <palantirJavaFormat>
+                            <version>${palantir-java-format.version}</version>
+                        </palantirJavaFormat>
+                        <formatAnnotations />
+                    </java>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
     </build>
-  </profile>
-</profiles>
+
+    <profiles>
+        <profile>
+            <id>release</id>
+            <build>
+                <plugins>
+
+                    <!-- Sources JAR — required by Central -->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-source-plugin</artifactId>
+                        <version>3.3.1</version>
+                        <executions>
+                            <execution>
+                                <id>attach-sources</id>
+                                <goals><goal>jar-no-fork</goal></goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+
+                    <!-- Javadoc JAR — required by Central -->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-javadoc-plugin</artifactId>
+                        <version>3.6.3</version>
+                        <executions>
+                            <execution>
+                                <id>attach-javadocs</id>
+                                <goals><goal>jar</goal></goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+
+                    <!-- GPG signing — required by Central -->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-gpg-plugin</artifactId>
+                        <version>3.2.4</version>
+                        <executions>
+                            <execution>
+                                <id>sign-artifacts</id>
+                                <phase>verify</phase>
+                                <goals><goal>sign</goal></goals>
+                            </execution>
+                        </executions>
+                        <configuration>
+                            <gpgArguments>
+                                <arg>--pinentry-mode</arg>
+                                <arg>loopback</arg>
+                            </gpgArguments>
+                        </configuration>
+                    </plugin>
+
+                    <!-- Central Publishing Plugin -->
+                    <plugin>
+                        <groupId>org.sonatype.central</groupId>
+                        <artifactId>central-publishing-maven-plugin</artifactId>
+                        <version>0.10.0</version>
+                        <extensions>true</extensions>
+                        <configuration>
+                            <publishingServerId>central</publishingServerId>
+                            <autoPublish>true</autoPublish>
+                        </configuration>
+                    </plugin>
+
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 
 </project>

@@ -1,6 +1,12 @@
 package io.github.loomforge.jtg.plugin;
 
 import io.github.loomforge.jtg.plugin.RecordParser.RecordDefinition;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Stream;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
@@ -8,13 +14,6 @@ import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
-
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Stream;
 
 /**
  * Maven goal: {@code jtg:generate}
@@ -70,11 +69,7 @@ import java.util.stream.Stream;
  * </executions>
  * }</pre>
  */
-@Mojo(
-    name = "generate",
-    defaultPhase = LifecyclePhase.GENERATE_SOURCES,
-    threadSafe = true
-)
+@Mojo(name = "generate", defaultPhase = LifecyclePhase.GENERATE_SOURCES, threadSafe = true)
 public class GenerateMojo extends AbstractMojo {
 
     /**
@@ -129,9 +124,8 @@ public class GenerateMojo extends AbstractMojo {
             if (!Files.isDirectory(root)) continue;
 
             try (Stream<Path> walker = Files.walk(root)) {
-                List<Path> javaFiles = walker
-                    .filter(p -> p.toString().endsWith(".java"))
-                    .toList();
+                List<Path> javaFiles =
+                        walker.filter(p -> p.toString().endsWith(".java")).toList();
 
                 for (Path javaFile : javaFiles) {
                     filesScanned++;
@@ -157,15 +151,13 @@ public class GenerateMojo extends AbstractMojo {
                 }
 
             } catch (IOException e) {
-                throw new MojoExecutionException(
-                    "JTG: error walking source root " + root, e);
+                throw new MojoExecutionException("JTG: error walking source root " + root, e);
             }
         }
 
         getLog().info(String.format(
-            "JTG: done — scanned %d file(s), found %d @TsRecord record(s), generated %d .ts file(s).",
-            filesScanned, recordsFound, filesGenerated
-        ));
+                "JTG: done — scanned %d file(s), found %d @TsRecord record(s), generated %d .ts file(s).",
+                filesScanned, recordsFound, filesGenerated));
 
         if (!errors.isEmpty()) {
             getLog().warn("JTG: " + errors.size() + " file(s) had errors. See warnings above.");

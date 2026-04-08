@@ -11,45 +11,42 @@ import java.util.Map;
 public final class TypeMapper {
 
     private static final Map<String, String> PRIMITIVES = Map.of(
-        // Java primitives
-        "byte",    "number",
-        "short",   "number",
-        "int",     "number",
-        "long",    "number",
-        "float",   "number",
-        "double",  "number",
-        "boolean", "boolean",
-        "char",    "string"
-    );
+            // Java primitives
+            "byte", "number",
+            "short", "number",
+            "int", "number",
+            "long", "number",
+            "float", "number",
+            "double", "number",
+            "boolean", "boolean",
+            "char", "string");
 
     private static final Map<String, String> BOXED = Map.of(
-        "Byte",      "number",
-        "Short",     "number",
-        "Integer",   "number",
-        "Long",      "number",
-        "Float",     "number",
-        "Double",    "number",
-        "Boolean",   "boolean",
-        "Character", "string",
-        "String",    "string"
-    );
+            "Byte", "number",
+            "Short", "number",
+            "Integer", "number",
+            "Long", "number",
+            "Float", "number",
+            "Double", "number",
+            "Boolean", "boolean",
+            "Character", "string",
+            "String", "string");
 
     private static final Map<String, String> COMMON = Map.ofEntries(
-        Map.entry("BigDecimal",       "number"),
-        Map.entry("BigInteger",       "number"),
-        Map.entry("UUID",             "string"),
-        Map.entry("LocalDate",        "string"),
-        Map.entry("LocalDateTime",    "string"),
-        Map.entry("ZonedDateTime",    "string"),
-        Map.entry("OffsetDateTime",   "string"),
-        Map.entry("Instant",          "string"),
-        Map.entry("Object",           "unknown"),
-        Map.entry("List",             "[]"),       // sentinel: array shorthand
-        Map.entry("Set",              "[]"),       // sentinel: array shorthand
-        Map.entry("Collection",       "[]"),       // sentinel: array shorthand
-        Map.entry("Map",              "Record<string, unknown>"),
-        Map.entry("Optional",         "unknown | null")
-    );
+            Map.entry("BigDecimal", "number"),
+            Map.entry("BigInteger", "number"),
+            Map.entry("UUID", "string"),
+            Map.entry("LocalDate", "string"),
+            Map.entry("LocalDateTime", "string"),
+            Map.entry("ZonedDateTime", "string"),
+            Map.entry("OffsetDateTime", "string"),
+            Map.entry("Instant", "string"),
+            Map.entry("Object", "unknown"),
+            Map.entry("List", "[]"), // sentinel: array shorthand
+            Map.entry("Set", "[]"), // sentinel: array shorthand
+            Map.entry("Collection", "[]"), // sentinel: array shorthand
+            Map.entry("Map", "Record<string, unknown>"),
+            Map.entry("Optional", "unknown | null"));
 
     private TypeMapper() {}
 
@@ -78,9 +75,8 @@ public final class TypeMapper {
             if (outerTs.startsWith("Record")) {
                 // Map<K, V> — split on comma at depth 0 to get value type
                 int comma = findTopLevelComma(inner);
-                String valueTs = comma >= 0
-                    ? toTypeScript(inner.substring(comma + 1).trim())
-                    : "unknown";
+                String valueTs =
+                        comma >= 0 ? toTypeScript(inner.substring(comma + 1).trim()) : "unknown";
                 return "Record<string, " + valueTs + ">";
             }
             return outerTs;

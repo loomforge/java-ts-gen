@@ -1,17 +1,16 @@
 package io.github.loomforge.jtg.plugin;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import io.github.loomforge.jtg.plugin.RecordParser.Component;
 import io.github.loomforge.jtg.plugin.RecordParser.RecordDefinition;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.io.TempDir;
-
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 class JTGTest {
 
@@ -24,26 +23,26 @@ class JTGTest {
 
     @Test
     void primitivesMappedCorrectly() {
-        assertEquals("number",  TypeMapper.toTypeScript("int"));
-        assertEquals("number",  TypeMapper.toTypeScript("long"));
-        assertEquals("number",  TypeMapper.toTypeScript("double"));
+        assertEquals("number", TypeMapper.toTypeScript("int"));
+        assertEquals("number", TypeMapper.toTypeScript("long"));
+        assertEquals("number", TypeMapper.toTypeScript("double"));
         assertEquals("boolean", TypeMapper.toTypeScript("boolean"));
-        assertEquals("string",  TypeMapper.toTypeScript("char"));
+        assertEquals("string", TypeMapper.toTypeScript("char"));
     }
 
     @Test
     void boxedTypesMappedCorrectly() {
-        assertEquals("number",  TypeMapper.toTypeScript("Integer"));
-        assertEquals("number",  TypeMapper.toTypeScript("BigDecimal"));
+        assertEquals("number", TypeMapper.toTypeScript("Integer"));
+        assertEquals("number", TypeMapper.toTypeScript("BigDecimal"));
         assertEquals("boolean", TypeMapper.toTypeScript("Boolean"));
-        assertEquals("string",  TypeMapper.toTypeScript("String"));
-        assertEquals("string",  TypeMapper.toTypeScript("UUID"));
+        assertEquals("string", TypeMapper.toTypeScript("String"));
+        assertEquals("string", TypeMapper.toTypeScript("UUID"));
     }
 
     @Test
     void collectionTypesMappedCorrectly() {
-        assertEquals("string[]",          TypeMapper.toTypeScript("List<String>"));
-        assertEquals("number[]",          TypeMapper.toTypeScript("Set<Integer>"));
+        assertEquals("string[]", TypeMapper.toTypeScript("List<String>"));
+        assertEquals("number[]", TypeMapper.toTypeScript("Set<Integer>"));
         assertEquals("Record<string, number>", TypeMapper.toTypeScript("Map<String, Integer>"));
     }
 
@@ -66,21 +65,21 @@ class JTGTest {
     void parsesSimpleComponents() {
         List<Component> components = RecordParser.parseComponents("String name, int age, boolean active");
         assertEquals(3, components.size());
-        assertEquals("name",   components.get(0).name());
+        assertEquals("name", components.get(0).name());
         assertEquals("String", components.get(0).type());
-        assertEquals("age",    components.get(1).name());
-        assertEquals("int",    components.get(1).type());
+        assertEquals("age", components.get(1).name());
+        assertEquals("int", components.get(1).type());
         assertEquals("active", components.get(2).name());
-        assertEquals("boolean",components.get(2).type());
+        assertEquals("boolean", components.get(2).type());
     }
 
     @Test
     void parsesGenericComponents() {
         List<Component> components = RecordParser.parseComponents("List<String> tags, Map<String, Integer> scores");
         assertEquals(2, components.size());
-        assertEquals("tags",          components.get(0).name());
-        assertEquals("List<String>",  components.get(0).type());
-        assertEquals("scores",        components.get(1).name());
+        assertEquals("tags", components.get(0).name());
+        assertEquals("List<String>", components.get(0).type());
+        assertEquals("scores", components.get(1).name());
         assertEquals("Map<String, Integer>", components.get(1).type());
     }
 
@@ -157,10 +156,7 @@ class JTGTest {
     void emitsInterface() throws IOException {
         Path javaFile = writeJava("User.java", "");
         RecordDefinition def = new RecordDefinition(
-                "User", "User", false,
-                List.of(new Component("name", "String"), new Component("age", "int")),
-                javaFile
-        );
+                "User", "User", false, List.of(new Component("name", "String"), new Component("age", "int")), javaFile);
 
         String ts = TsEmitter.render(def);
         assertTrue(ts.contains("export interface User {"));
@@ -171,11 +167,8 @@ class JTGTest {
     @Test
     void emitsTypeAlias() throws IOException {
         Path javaFile = writeJava("Config.java", "");
-        RecordDefinition def = new RecordDefinition(
-                "Config", "ConfigDTO", true,
-                List.of(new Component("timeout", "int")),
-                javaFile
-        );
+        RecordDefinition def =
+                new RecordDefinition("Config", "ConfigDTO", true, List.of(new Component("timeout", "int")), javaFile);
 
         String ts = TsEmitter.render(def);
         assertTrue(ts.contains("export type ConfigDTO = {"));
