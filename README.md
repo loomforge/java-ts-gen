@@ -49,7 +49,7 @@ In your `pom.xml`:
 ### 2. Annotate your records
 
 ```java
-import io.github.loomforge.annotation.TsRecord;
+import io.github.loomforge.jtg.annotation.TsRecord;
 
 @TsRecord
 public record User(String name, int age, boolean active, UUID id) {}
@@ -153,11 +153,14 @@ Override the phase if needed (e.g. bind to `process-sources` instead):
 </executions>
 ```
 
-Skip on demand:
+Command-line overrides (optional):
 
 ```bash
-mvn compile -Djtg.skip=true
+mvn compile -Djtg.skip=true      # skip generation
+mvn compile -Djtg.verbose=true    # log every scanned .java file
 ```
+
+XML `<configuration>` still maps to the same parameters; the properties above are the `-D` names Maven exposes for this Mojo.
 
 ---
 

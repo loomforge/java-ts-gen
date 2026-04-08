@@ -23,17 +23,39 @@ import java.util.stream.Stream;
  * with {@code @TsRecord} and generates a corresponding {@code .ts} file in the
  * same directory as the Java source file.</p>
  *
- * <p>Bound to the {@code generate-sources} phase by default, so it runs
- * automatically as part of any standard build ({@code mvn compile},
- * {@code mvn package}, etc.). Can still be invoked explicitly via
- * {@code mvn jtg:generate}.</p>
+ * <p>Maven runs this goal only when it is <em>bound</em> under {@code <executions>}
+ * or when you invoke it explicitly ({@code mvn jtg:generate}). This Mojo declares
+ * {@code defaultPhase = generate-sources}: if an execution omits {@code <phase>},
+ * Maven binds the goal to {@code generate-sources}, so a normal
+ * {@code mvn compile} / {@code mvn package} then triggers generation before
+ * compilation.</p>
  *
- * <h2>Minimal consumer configuration</h2>
+ * <h2>Typical: bind to the lifecycle</h2>
+ * <p>Matches the project README — generation runs on every build.</p>
  * <pre>{@code
  * <plugin>
- *   <groupId>io.github.tsforge</groupId>
- *   <artifactId>forge-maven-plugin</artifactId>
- *   <version>0.1.0</version>
+ *   <groupId>io.github.loomforge</groupId>
+ *   <artifactId>jtg-maven-plugin</artifactId>
+ *   <version>${version}</version>
+ *   <executions>
+ *     <execution>
+ *       <phase>generate-sources</phase>
+ *       <goals><goal>generate</goal></goals>
+ *     </execution>
+ *   </executions>
+ * </plugin>
+ * }</pre>
+ * <p>You may omit {@code <phase>} here; it then defaults to {@code generate-sources}
+ * from the Mojo metadata.</p>
+ *
+ * <h2>Without lifecycle binding</h2>
+ * <p>Declare the plugin only (no {@code <executions>}) and run {@code mvn jtg:generate}
+ * when you want TypeScript emitted.</p>
+ * <pre>{@code
+ * <plugin>
+ *   <groupId>io.github.loomforge</groupId>
+ *   <artifactId>jtg-maven-plugin</artifactId>
+ *   <version>${version}</version>
  * </plugin>
  * }</pre>
  *
@@ -41,7 +63,7 @@ import java.util.stream.Stream;
  * <pre>{@code
  * <executions>
  *   <execution>
- *     <id>forge-generate</id>
+ *     <id>jtg-generate</id>
  *     <phase>process-sources</phase>
  *     <goals><goal>generate</goal></goals>
  *   </execution>
@@ -66,19 +88,19 @@ public class GenerateMojo extends AbstractMojo {
      * Additional source directories to scan, beyond the project's default source roots.
      * Optional — usually not needed.
      */
-    @Parameter(property = "forge.additionalSourceDirs")
+    @Parameter(property = "jtg.additionalSourceDirs")
     private List<String> additionalSourceDirs;
 
     /**
      * If {@code true}, the plugin logs extra detail about every file it scans.
      */
-    @Parameter(property = "forge.verbose", defaultValue = "false")
+    @Parameter(property = "jtg.verbose", defaultValue = "false")
     private boolean verbose;
 
     /**
-     * If {@code true}, skip execution entirely (e.g. {@code -Dforge.skip=true}).
+     * If {@code true}, skip execution entirely (e.g. {@code -Djtg.skip=true}).
      */
-    @Parameter(property = "forge.skip", defaultValue = "false")
+    @Parameter(property = "jtg.skip", defaultValue = "false")
     private boolean skip;
 
     // -------------------------------------------------------------------------
@@ -86,7 +108,7 @@ public class GenerateMojo extends AbstractMojo {
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
         if (skip) {
-            getLog().info("JTG: skipping generation (forge.skip=true)");
+            getLog().info("JTG: skipping generation (jtg.skip=true)");
             return;
         }
 
@@ -140,7 +162,6 @@ public class GenerateMojo extends AbstractMojo {
             }
         }
 
-        // Summary
         getLog().info(String.format(
             "JTG: done — scanned %d file(s), found %d @TsRecord record(s), generated %d .ts file(s).",
             filesScanned, recordsFound, filesGenerated
@@ -150,8 +171,6 @@ public class GenerateMojo extends AbstractMojo {
             getLog().warn("JTG: " + errors.size() + " file(s) had errors. See warnings above.");
         }
     }
-
-    // -------------------------------------------------------------------------
 
     private List<Path> collectSourceRoots() {
         List<Path> roots = new ArrayList<>();

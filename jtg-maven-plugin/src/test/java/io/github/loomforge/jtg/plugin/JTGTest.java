@@ -99,7 +99,7 @@ class JTGTest {
         Path javaFile = writeJava("User.java", """
             package com.example;
 
-            import io.github.tsforge.annotation.TsRecord;
+            import io.github.loomforge.jtg.annotation.TsRecord;
 
             @TsRecord
             public record User(String name, int age, boolean active) {}
