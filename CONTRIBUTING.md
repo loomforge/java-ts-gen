@@ -1,12 +1,17 @@
 # Contributing to Java-TS-Gen
 
-Thanks for your interest in contributing! JTG is a small, focused tool — contributions that align with its scope are very welcome.
+Thanks for your interest in contributing. JTG is intentionally small and focused; changes that match that scope are welcome.
 
 ---
 
-## Getting Started
+## Prerequisites
 
-**Prerequisites:** Java 17+, Maven 3.8+
+- **JDK 17** (see the parent `pom.xml`: `java.version`)
+- **Maven 3.8+** (3.9.x is used in CI and matches the version pinned in the parent POM for reference)
+
+---
+
+## Clone and build
 
 ```bash
 git clone https://github.com/loomforge/java-ts-gen.git
@@ -14,49 +19,71 @@ cd java-ts-gen
 mvn install
 ```
 
-The project has two modules:
+### Modules
 
-| Module | Purpose |
-|---|---|
-| `jtg-annotation/` | `@TsRecord` annotation (zero deps, source retention) |
-| `jtg-maven-plugin/` | `jtg:generate` Mojo, parser, type mapper, and emitter |
+| Module              | Role                                                                |
+|---------------------|---------------------------------------------------------------------|
+| `jtg-annotation/`   | `@TsRecord` — no third-party dependencies, `RetentionPolicy.SOURCE` |
+| `jtg-maven-plugin/` | `jtg:generate` goal, `RecordParser`, `TypeMapper`, `TsEmitter`      |
 
 ---
 
-## Running Tests
+## Tests and checks
+
+Run the full unit test suite:
 
 ```bash
 mvn test
 ```
 
-Tests live in `jtg-maven-plugin/src/test/java/`. All changes must pass the existing suite. New behaviour must be covered by new tests.
+Tests live under `jtg-maven-plugin/src/test/java/`. New behaviour should include tests that fail without your change and pass with it.
+
+Before opening a PR, run a full build the same way CI does:
+
+```bash
+mvn -B package
+```
+
+The **Java CI with Maven** workflow (`.github/workflows/maven.yml`) runs on pushes and pull requests to `main` and executes that command.
+
+The parent POM configures **Spotless** with Palantir Java Format. It runs during the `compile` phase (`spotless:check`). If formatting fails locally, apply it with:
+
+```bash
+mvn spotless:apply
+```
+
+Then run `mvn package` again.
 
 ---
 
-## How to Contribute
+## How to contribute
 
-### Reporting a Bug
-Open a [GitHub Issue](https://github.com/loomforge/java-ts-gen/issues) with:
-- JTG version
-- Minimal Java record that reproduces the problem
-- Expected vs. actual generated TypeScript
+### Reporting a bug
 
-### Suggesting a Feature
-Open an issue before writing code. Check the [Roadmap](README.md#roadmap) — items there are already planned and PRs for them are welcome.
+Open a [GitHub issue](https://github.com/loomforge/java-ts-gen/issues) with:
 
-### Submitting a Pull Request
-1. Fork the repo and create a branch: `git checkout -b feat/your-feature`
-2. Make your changes with tests
-3. Run `mvn verify` and confirm everything passes
-4. Open a PR against `main` with a clear description of what and why
+- JTG / artifact version
+- Minimal Java source (record + annotation) that reproduces the problem
+- Expected vs actual generated TypeScript
+
+### Suggesting a feature
+
+Open an issue before large or ambiguous work. The [Roadmap](README.md#roadmap) lists planned directions; PRs aligned with those items are especially welcome.
+
+### Pull requests
+
+1. Fork the repository and create a branch, e.g. `feat/your-feature`.
+2. Implement the change with tests and formatting (`mvn spotless:apply` if needed).
+3. Run `mvn -B package` (or at least `mvn verify`) and ensure everything passes.
+4. Open a PR against `main` with a clear description of what changed and why.
 
 ---
 
-## Code Conventions
+## Code conventions
 
-- Follow the style of the surrounding code (standard Java conventions)
-- Keep commits focused — one logical change per commit
-- Commit messages: short imperative summary, e.g. `Add enum support to TypeMapper`
+- Match the style of surrounding code; Spotless enforces Java formatting on build.
+- Keep commits focused: one logical change per commit when practical.
+- Prefer imperative, concise commit subjects, e.g. `Add enum support to TypeMapper`.
 
 ---
 
