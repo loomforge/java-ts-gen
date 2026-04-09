@@ -8,7 +8,7 @@ JTG is a developer-time Maven plugin. You annotate a Java `record` with `@TsReco
 mvn jtg:generate
 ```
 
-Published version (see the root `pom.xml` for the current release): **0.1.0**.
+Published version (see the root `pom.xml` for the current release): **0.1.1**.
 
 ---
 
@@ -24,7 +24,7 @@ In your `pom.xml`:
   <dependency>
     <groupId>io.github.loomforge</groupId>
     <artifactId>jtg-annotation</artifactId>
-    <version>0.1.0</version>
+    <version>${version}</version>
     <scope>provided</scope>
     <optional>true</optional>
   </dependency>
@@ -35,7 +35,7 @@ In your `pom.xml`:
     <plugin>
       <groupId>io.github.loomforge</groupId>
       <artifactId>jtg-maven-plugin</artifactId>
-      <version>0.1.0</version>
+      <version>${version}</version>
       <executions>
         <execution>
           <phase>generate-sources</phase>
@@ -146,7 +146,7 @@ Optional parameters:
 <plugin>
   <groupId>io.github.loomforge</groupId>
   <artifactId>jtg-maven-plugin</artifactId>
-  <version>0.1.0</version>
+  <version>${version}</version>
   <configuration>
     <!-- Extra roots to scan (in addition to compile source roots) -->
     <additionalSourceDirs>
