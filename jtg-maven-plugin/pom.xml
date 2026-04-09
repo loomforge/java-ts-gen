@@ -7,7 +7,7 @@
     <parent>
         <groupId>io.github.loomforge</groupId>
         <artifactId>java-ts-gen</artifactId>
-        <version>0.1.0</version>
+        <version>0.1.1</version>
     </parent>
 
     <artifactId>jtg-maven-plugin</artifactId>
